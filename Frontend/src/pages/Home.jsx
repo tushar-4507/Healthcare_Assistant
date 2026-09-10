@@ -4,13 +4,15 @@ import { motion } from "motion/react";
 import right_arrow from "../assets/right_arrow.svg";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user, loading } = useAuth();
 
   const handleClick = () => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (!isLoggedIn) {
+    if (loading) return;
+    if (!user) {
       toast.info("Please login first");
       navigate("/login");
       return;

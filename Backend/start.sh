@@ -1,6 +1,9 @@
 #!/bin/bash
+set -e
 
-echo "🔁 Building FAISS Vectorstore..."
+cd "$(dirname "$0")"
+
+echo "🔁 Building/loading FAISS Vectorstore..."
 python creatememoryllm.py
 
 echo "🚀 Starting FastAPI server..."

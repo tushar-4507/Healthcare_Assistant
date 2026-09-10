@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import menu_icon from "../assets/menu_icon.svg";
 import cross_icon from "../assets/cross_icon.svg";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = ({ solidBackground = false }) => {
   const location = useLocation();
@@ -12,7 +13,7 @@ const Navbar = ({ solidBackground = false }) => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isScrolledPastHome, setIsScrolledPastHome] = useState(false);
 
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
+  const { user, logout, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,12 +36,14 @@ const Navbar = ({ solidBackground = false }) => {
 
   const isSolid = solidBackground || isScrolledPastHome;
 
-  const handleLogout = () => {
-    toast.success("Logged out successfully");
-    setTimeout(() => {
-      localStorage.removeItem("isLoggedIn");
-      window.location.reload();
-    }, 500);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out successfully");
+      navigate("/");
+    } catch {
+      toast.error("Logout failed");
+    }
   };
 
   return (
@@ -88,12 +91,12 @@ const Navbar = ({ solidBackground = false }) => {
             )}
           </ul>
           <button
-            onClick={isLoggedIn ? handleLogout : () => navigate("/login")}
+            onClick={user ? handleLogout : () => navigate("/login")}
             className={`px-8 py-2 rounded-full ml-4 transition-all duration-300 ${
               isSolid ? "bg-black text-white" : "bg-white text-black"
             }`}
           >
-            {isLoggedIn ? "Logout" : "Login"}
+            {loading ? "..." : user ? "Logout" : "Login"}
           </button>
         </div>
 
@@ -158,10 +161,10 @@ const Navbar = ({ solidBackground = false }) => {
             </>
           )}
           <button
-            onClick={isLoggedIn ? handleLogout : () => navigate("/login")}
+            onClick={user ? handleLogout : () => navigate("/login")}
             className="bg-black text-white px-8 py-2 rounded-full mt-4"
           >
-            {isLoggedIn ? "Logout" : "Login"}
+            {loading ? "..." : user ? "Logout" : "Login"}
           </button>
         </ul>
       </div>

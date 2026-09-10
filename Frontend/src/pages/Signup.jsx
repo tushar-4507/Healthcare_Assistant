@@ -2,29 +2,29 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signup } = useAuth();
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    const existingUser = JSON.parse(localStorage.getItem("user"));
-
-    if (existingUser && existingUser.mobile === mobile) {
-      toast.error("User already registered with this mobile number!");
-      return;
+    try {
+      await signup(name, mobile, password);
+      toast.success("Signup successful! You are now logged in.");
+      navigate("/main");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const user = { name, mobile, password };
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("isLoggedIn", "true");
-
-    toast.success("Signup successful! You are now logged in.");
-    navigate("/main"); // Redirect to main page
   };
 
   return (
@@ -63,15 +63,17 @@ const Signup = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              minLength={6}
               required
               className="w-full px-4 py-2 border rounded mt-1"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white py-2 rounded mt-2"
+            disabled={isSubmitting}
+            className="w-full bg-purple-600 text-white py-2 rounded mt-2 disabled:opacity-60"
           >
-            Sign Up
+            {isSubmitting ? "Creating account..." : "Sign Up"}
           </button>
           <p className="mt-4 text-center text-gray-600">
             Already registered?{" "}

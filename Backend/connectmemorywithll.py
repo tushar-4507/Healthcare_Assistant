@@ -58,11 +58,13 @@ db = FAISS.load_local(DB_FAISS_PATH, embedding_model, allow_dangerous_deserializ
 
 # ---- QA Chain ----
 qa_chain = RetrievalQA.from_chain_type(
-    llm=ChatGroq(
-        model_name="llama-3.1-8b-instant",
-        temperature=0.1,
-        groq_api_key=os.environ["GROQ_API_KEY"],
-    ),
+    llm = ChatGroq(
+    model_name="openai/gpt-oss-20b",
+    temperature=0.1,
+    groq_api_key=GROQ_API_KEY,
+    timeout=30,
+    max_retries=1,
+),
     chain_type="stuff",
     retriever=db.as_retriever(search_kwargs={'k': 2}),
     return_source_documents=True,  # Important used for debugging or safety

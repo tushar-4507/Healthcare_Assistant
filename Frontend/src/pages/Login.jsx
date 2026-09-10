@@ -2,28 +2,27 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if (!user) {
-      toast.error("No user found. Please sign up first.");
-      return;
-    }
-
-    if (user.mobile === mobile && user.password === password) {
-      localStorage.setItem("isLoggedIn", "true");
+    try {
+      await login(mobile, password);
       toast.success("Login successful!");
       navigate("/main");
-    } else {
-      toast.error("Invalid mobile number or password!");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -59,9 +58,10 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-purple-600 text-white py-2 rounded mt-2"
+            disabled={isSubmitting}
+            className="w-full bg-purple-600 text-white py-2 rounded mt-2 disabled:opacity-60"
           >
-            Login
+            {isSubmitting ? "Logging in..." : "Login"}
           </button>
           <p className="mt-4 text-center text-gray-600">
             Not registered yet?{" "}

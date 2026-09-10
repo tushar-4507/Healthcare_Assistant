@@ -2,15 +2,15 @@ import React from "react";
 import { toast } from "react-toastify";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Contact = () => {
   const [result, setResult] = React.useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const onSubmit = async (event) => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-
-    if (!isLoggedIn) {
+    if (!user) {
       event.preventDefault();
       toast.info("Please login first");
       navigate("/login");

@@ -7,36 +7,42 @@ import Footer from "./components/Footer";
 import MainPage from "./pages/MainPage";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   return (
     <Router>
-      <div className="w-full overflow-hidden">
-        <ToastContainer />
-        <Routes>
-          {/* Home page with About, Contact, Footer */}
-          <Route
-            path="/"
-            element={
-              <>
-                <Home />
-                <About />
-                <Contact />
-                <Footer />
-              </>
-            }
-          />
-
-          {/* Main page */}
-          <Route path="/main" element={<MainPage />} />
-
-          {/* Authentication routes */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </div>
+      <AuthProvider>
+        <div className="w-full overflow-hidden">
+          <ToastContainer />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Home />
+                  <About />
+                  <Contact />
+                  <Footer />
+                </>
+              }
+            />
+            <Route
+              path="/main"
+              element={
+                <ProtectedRoute>
+                  <MainPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </div>
+      </AuthProvider>
     </Router>
   );
 };

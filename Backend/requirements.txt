@@ -17,3 +17,7 @@ pandas
 python-dotenv
 tqdm
 requests
+
+pymongo
+PyJWT
+pwdlib[argon2]
